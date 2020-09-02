@@ -7,7 +7,6 @@
 *
 * Compiler Flags
 * -DDATA_LOGGING : data logging mode for collecting data
-* -DNEAI_EMU     : test mode with NanoEdge AI Emulator 
 * -DNEAI_LIB     : test mode with NanoEdge AI Library
 *
 * @note   if no compiler flag then data logging mode by default
@@ -23,7 +22,7 @@
 #include <math.h>
 
 /* Defines -------------------------------------------------------------------*/
-#if !defined(DATA_LOGGING) && !defined(NEAI_EMU) && !defined(NEAI_LIB)
+#if !defined(DATA_LOGGING) && !defined(NEAI_LIB)
 #define DATA_LOGGING
 #endif
 #ifdef DATA_LOGGING
@@ -67,9 +66,6 @@ float acc_buffer_z[DATA_INPUT_USER] = {0.F};
 #ifdef DATA_LOGGING
 void data_logging_mode(void);
 #endif
-#ifdef NEAI_EMU
-void neai_emulator_test_mode(void);
-#endif
 #ifdef NEAI_LIB
 void neai_library_test_mode(void);
 #endif
@@ -80,11 +76,7 @@ void fill_acc_buffer(void);
 void get_acc_values(void);
 void fill_acc_buffer_2(void);
 /* BEGIN CODE-----------------------------------------------------------------*/
-/**
-  * @brief  The application entry point
-  *
-  * @retval int
-  */
+
 int main()
 {
 	/* Initialization */
@@ -96,11 +88,6 @@ int main()
 	data_logging_mode();
 #endif
 
-#ifdef NEAI_EMU
-	/* NanoEdge AI Emulator test mode */
-	/* Compiler flag -DNEAI_EMU */
-	neai_emulator_test_mode();
-#endif
 	
 #ifdef NEAI_LIB
 	/* NanoEdge AI Library test mode */
@@ -111,18 +98,12 @@ int main()
 
 /* Functions definition ------------------------------------------------------*/
 #ifdef DATA_LOGGING
-/**
- * @brief  Data logging process
- *
- * @param  None
- * @retval None
- */
+
 void data_logging_mode()
 {
 	while(1) {
-		/* Press user button to start a logging process */
+		/* Make a little pressure to start the learning process */
 		/* Blink LED: running logging process */		
-		/* Process is repeat each time you push "User" button */
 			
 		/* Waiting for a little preasure*/
 		int start = 0;
@@ -154,39 +135,14 @@ void data_logging_mode()
 }
 #endif
 
-#ifdef NEAI_EMU
-/**
- * @brief  Testing process with NanoEdge AI emulator
- *
- * @param  None
- * @retval None
- */
-void neai_emulator_test_mode()
-{
-	/* Press user button to start */
-	while(1) {
-			
-			pc.printf("%d\n", LEARNING_NUMBER);
-			bt.printf("%d\n", LEARNING_NUMBER);
-			while(1) {
-				fill_acc_buffer();
-			
-		}
-	}
-}
-#endif
-
 #ifdef NEAI_LIB
-/**
- * @brief  Testing process with NanoEdge AI library
- *
- * @param  None
- * @retval None
- */
+
 void neai_library_test_mode()
 {
 	/* Learning process */
-	/* Press user button to start the learning process */
+	/* Make a little pressure to start the learning process */
+
+	/* Waiting for a little preasure*/
 	while (learn_cpt < LEARNING_NUMBER) {
 
 		int start = 0;
@@ -204,7 +160,7 @@ void neai_library_test_mode()
 		/* Wait one seconds before starting learning process */
 		wait_ms(1000);
 
-		/* Learning process for one speed */
+		/* Learning process */
 		for (uint16_t i = 0; i < LEARNING_NUMBER; i++) {
 			fill_acc_buffer_2();
 			NanoEdgeAI_learn(acc_buffer);
@@ -299,12 +255,7 @@ void neai_library_test_mode()
 }
 #endif
 
-/**
- * @brief  Initialization (baud rate, accelerometer sensor, etc.)
- *
- * @param  None
- * @retval None
- */
+
 void init()
 {
 	pc.baud(115200);
@@ -314,12 +265,7 @@ void init()
 #endif
 }
 
-/**
- * @brief  Initialization of accelerometer sensor (range, frequency, etc.)
- *
- * @param  None
- * @retval None
- */
+
 void init_bmi160()
 {
 	imu.setSensorPowerMode(BMI160::ACC, BMI160::NORMAL);
@@ -332,24 +278,13 @@ void init_bmi160()
 	wait_ms(100);
 }
 
-/**
- * @brief  Toggle the user LED state
- *
- * @param  None
- * @retval None
- */
+
 void toggle_led(void)
 {
 	myled = !myled;
 }
 
-/**
- * @brief  Fill accelerometer buffer
- * acc_buffer[] = [ax0, ay0, az0, ax1, ay1, az1, ...]
- *
- * @param  None
- * @retval None
- */
+
 void fill_acc_buffer()
 {
 	for (uint16_t i = 0; i < DATA_INPUT_USER; i++) {
@@ -388,12 +323,8 @@ void fill_acc_buffer_2()
 		wait_ms(0.05);
 	}
 }
-/**
- * @brief  Get accelerometer values (x-, y- and z-axis)
- *
- * @param  None
- * @retval None
- */
+
+
 void get_acc_values()
 {
 	/* Polling method to get a complete buffer */
